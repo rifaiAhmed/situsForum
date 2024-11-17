@@ -1,0 +1,11 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: learn_docker
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret123
+      MYSQL_DATABASE: fast_campus3
+    volumes:
+      - ./mysql_data/db:/var/lib/mysql

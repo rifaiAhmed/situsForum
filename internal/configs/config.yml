@@ -1,0 +1,5 @@
+service:
+  port: ":9876"
+
+database:
+  dataSourceName: "root:secret123@tcp(localhost:3309)/fast_campus3"
