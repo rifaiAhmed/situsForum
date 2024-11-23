@@ -7,7 +7,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/rifaiAhmed/fastcampus/internal/configs"
 	"github.com/rifaiAhmed/fastcampus/internal/handlers/memberships"
+	"github.com/rifaiAhmed/fastcampus/internal/handlers/posts"
 	membershipRepo "github.com/rifaiAhmed/fastcampus/internal/repository/memberships"
+	postRepo "github.com/rifaiAhmed/fastcampus/internal/repository/posts"
+	membershipService "github.com/rifaiAhmed/fastcampus/internal/service/memberships"
+	postService "github.com/rifaiAhmed/fastcampus/internal/service/posts"
 	"github.com/rifaiAhmed/fastcampus/pkg/internalsql"
 )
 
@@ -32,8 +36,21 @@ func main() {
 	if err != nil {
 		log.Fatal("gagal inisialisasi database")
 	}
-	_ = membershipRepo.NewRepository(db)
-	membershipHandler := memberships.NewHandler(r)
+
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+
+	membershipRepo := membershipRepo.NewRepository(db)
+	postRepo := postRepo.NewRepository(db)
+
+	membershipService := membershipService.NewService(membershipRepo, cfg)
+	postService := postService.NewService(postRepo, cfg)
+
+	membershipHandler := memberships.NewHandler(r, membershipService)
+	postHandler := posts.NewHandler(r, postService)
+
 	membershipHandler.RegisterRouter()
+	postHandler.RegisterRouter()
+
 	r.Run(cfg.Service.Port)
 }
